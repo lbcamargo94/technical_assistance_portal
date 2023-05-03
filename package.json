@@ -1,4 +1,12 @@
 {
+  "name": "technical_assistance_portal",
+  "version": "1.0.0",
+  "description": "technical assistance portal under development",
+  "main": "server.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "ts-node-dev -r --respawn --transpile-only --ignore-watch node_modules src/server.ts"
+  },
   "devDependencies": {
     "typescript": "^5.0.4"
   },
