@@ -1,0 +1,170 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organizations {
+  // data Organizations
+  id         String   @id @unique @default(uuid()) @db.Uuid
+  address    String   @db.VarChar(100)
+  blocked    Boolean  @default(false)
+  cep        String   @db.VarChar(8)
+  cpf_cnpj   String   @unique @db.VarChar(14)
+  contact    String   @db.VarChar(15)
+  name       String   @unique @db.VarChar(150)
+  nickname   String   @db.VarChar(50)
+  // create and update
+  createdAt  DateTime @default(now()) @db.Timestamptz()
+  updatedAt  DateTime @updatedAt @db.Timestamptz()
+  // relations
+  users      Users[]
+  profile    Profiles @relation(fields: [profilesId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  profilesId String   @db.Uuid
+
+  @@map("organizations")
+}
+
+model Users {
+  // data Users
+  id              String        @id @unique @default(uuid()) @db.Uuid
+  blocked         Boolean       @default(false)
+  login           String        @unique @db.VarChar(100)
+  email           String        @db.VarChar(100)
+  firstName       String        @db.VarChar(100)
+  lastName        String        @db.VarChar(100)
+  password        String        @db.VarChar(65)
+  // create and update
+  createdAt       DateTime      @default(now()) @db.Timestamptz()
+  updatedAt       DateTime      @updatedAt @db.Timestamptz()
+  // relations
+  organization    Organizations @relation(fields: [organizationsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  organizationsId String        @db.Uuid
+  accessLevel     AccessLevel   @relation(fields: [accessLevelId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  accessLevelId   String        @db.Uuid
+
+  @@map("users")
+}
+
+model Address {
+  // data Address
+  id              String  @id @unique @default(uuid()) @db.Uuid
+  zipCode         String  @db.VarChar(8)
+  state           String  @db.VarChar(100)
+  city            String  @db.VarChar(100)
+  neighborhood    String  @db.VarChar(100)
+  street          String  @db.VarChar(100)
+  houseNumber     String  @db.VarChar(100)
+  complement      String  @db.VarChar(100)
+  mainAddress     Boolean @default(false)
+  deliveryAddress Boolean @default(false)
+
+  @@map("address")
+}
+
+model Profiles {
+  // data Profiles
+  id           String          @id @unique @default(uuid()) @db.Uuid
+  name         String          @unique @db.VarChar(50)
+  // create and update
+  createdAt    DateTime        @default(now()) @db.Timestamptz()
+  updatedAt    DateTime        @updatedAt @db.Timestamptz()
+  // relations
+  privileges   Privileges[]
+  organization Organizations[]
+
+  @@map("profiles")
+}
+
+model AccessLevel {
+  // data AccessLevel
+  id             String           @id @unique @default(uuid()) @db.Uuid
+  name           String           @db.VarChar(50)
+  // create and update
+  createdAt      DateTime         @default(now()) @db.Timestamptz()
+  updatedAt      DateTime         @updatedAt @db.Timestamptz()
+  // relations
+  authorizations Authorizations[]
+  privileges     Privileges[]
+  users          Users[]
+
+  @@map("access_level")
+}
+
+model Routines {
+  // data Routines
+  id        String     @id @unique @default(uuid()) @db.Uuid
+  name      String     @db.VarChar(50)
+  // create and update
+  createdAt DateTime   @default(now()) @db.Timestamptz()
+  updatedAt DateTime   @updatedAt @db.Timestamptz()
+  // relations
+  accesses  Accesses[]
+
+  @@map("routines")
+}
+
+model Permissions {
+  // data Permissions
+  id        String     @id @unique @default(uuid()) @db.Uuid
+  name      String     @db.VarChar(50)
+  // create and update
+  createdAt DateTime   @default(now()) @db.Timestamptz()
+  updatedAt DateTime   @updatedAt @db.Timestamptz()
+  // relations
+  accesses  Accesses[]
+
+  @@map("permissions")
+}
+
+model Accesses {
+  // data Accesses
+  id             String           @id @unique @default(uuid()) @db.Uuid
+  // create and update
+  createdAt      DateTime         @default(now()) @db.Timestamptz()
+  updatedAt      DateTime         @updatedAt @db.Timestamptz()
+  // relations
+  authorizations Authorizations[]
+  routine        Routines         @relation(fields: [routinesId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  routinesId     String           @db.Uuid
+  permission     Permissions      @relation(fields: [permissionsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  permissionsId  String           @db.Uuid
+
+  @@map("accesses")
+}
+
+model Privileges {
+  //data Privileges
+  id            String      @id @unique @default(uuid()) @db.Uuid
+  // create and update
+  createdAt     DateTime    @default(now()) @db.Timestamptz()
+  updatedAt     DateTime    @updatedAt @db.Timestamptz()
+  // relations
+  profile       Profiles    @relation(fields: [profilesId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  profilesId    String      @db.Uuid
+  accessLevel   AccessLevel @relation(fields: [accessLevelId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  accessLevelId String      @db.Uuid
+
+  @@map("privileges")
+}
+
+model Authorizations {
+  //data Authorizations
+  id            String      @id @unique @default(uuid()) @db.Uuid
+  // create and update
+  createdAt     DateTime    @default(now()) @db.Timestamptz()
+  updatedAt     DateTime    @updatedAt @db.Timestamptz()
+  // relations
+  accesses      Accesses    @relation(fields: [accessesId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  accessesId    String      @db.Uuid
+  accessLevel   AccessLevel @relation(fields: [accessLevelId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  accessLevelId String      @db.Uuid
+
+  @@map("authorizations")
+}

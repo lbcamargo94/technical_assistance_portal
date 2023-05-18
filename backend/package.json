@@ -1,0 +1,39 @@
+{
+  "name": "technical_assistance_portal",
+  "version": "1.0.0",
+  "description": "technical assistance portal under development",
+  "main": "server.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "npx tsc",
+    "prackage:update": "npm outdated && npm update && npx npm-check-updates -u && npm install",
+    "commit:moji": "gitmoji -c",
+    "commit": "git add . && git status && npx cz",
+    "dev": "ts-node-dev -r --respawn --transpile-only --ignore-watch node_modules src/server.ts",
+    "prisma:deploy": "npx prisma migrate deploy",
+    "prisma:migrate": "npx prisma migrate dev --name",
+    "prisma:reset": "npx prisma migrate reset",
+    "prisma:seed": "prisma db push && node prisma/seeds/index.ts",
+    "prisma:studio": "npx prisma studio"
+  },
+  "devDependencies": {
+    "@types/node": "^20.2.0",
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "prisma": "^4.14.1",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "tslib": "^2.5.1",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.14.1",
+    "@types/express": "^4.17.17",
+    "express": "^4.18.2"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
